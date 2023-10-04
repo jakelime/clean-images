@@ -41,10 +41,10 @@ class ImageCleaner:
 
 def main():
     fm = PathFinder()
-    imgs = fm.get_image_files(".png", exclude_kw="output")
+    imgs = fm.get_image_files(file_ext=".png", exclude_kw="output")
     output_dir = fm.generate_output_dir("output_cleaned_images")
     icc = ImageCleaner(imgs, output_dir)
-    icc.run(generate_random_id=True)
+    icc.run(generate_random_id=True, cropbox=(11, 81, 422, 477))
 
 
 if __name__ == "__main__":
