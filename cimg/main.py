@@ -1,6 +1,7 @@
 from pathlib import Path
 from utils import PathFinder
 from PIL import Image
+import uuid
 
 
 class ImageCleaner:
@@ -12,15 +13,19 @@ class ImageCleaner:
             raise NotADirectoryError(f"{output_dir=}")
         self.output_dir = output_dir
 
-    def run(self):
+    def run(self, generate_random_id: bool=False):
         for fp in self.input_images:
-            new_fp = self.output_dir / f"{fp.name}"
+            if generate_random_id:
+                random_id = str(uuid.uuid4())
+                random_id = random_id[-12:]
+                new_fp = self.output_dir / f"{random_id}{fp.suffix}"
+            else:
+                new_fp = self.output_dir / f"{fp.name}"
             with Image.open(fp) as img:
                 img = self.crop_image(img)
                 # img.show()
                 img.save(new_fp)
                 print(f"cropped and saved to //{new_fp.parent.name}/{new_fp.name}")
-
 
     def crop_image(
         self, img: Image.Image, cropbox: tuple = (11, 81, 422, 477)
@@ -51,7 +56,7 @@ def main():
     imgs = fm.get_image_files(".png", exclude_kw="output")
     output_dir = fm.generate_output_dir("cleaned_images")
     icc = ImageCleaner(imgs, output_dir)
-    icc.run()
+    icc.run(generate_random_id=True)
 
 
 if __name__ == "__main__":
